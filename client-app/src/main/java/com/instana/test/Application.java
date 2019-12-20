@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.UUID;
 
 @SpringBootApplication
 @SuppressWarnings("unused")
@@ -39,15 +43,20 @@ public class Application {
 
 		ResponseEntity<String> issueRequest() {
 			try {
-				ResponseEntity<String> entity = restTemplate.getForEntity(targetUrl.toURI(), String.class);
+				HttpHeaders headers = new HttpHeaders();
+				headers.set("x-test-header-1", "value");
+				headers.set("x-test-header-2", UUID.randomUUID().toString());
+				HttpEntity<String> entity = new HttpEntity<>(headers);
 
-				HttpStatus responseStatus = entity.getStatusCode();
+				ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl.toURI(), HttpMethod.GET, entity, String.class);
+
+				HttpStatus responseStatus = responseEntity.getStatusCode();
 
 				if (!responseStatus.is2xxSuccessful()) {
 					throw new RuntimeException(String.format("Request failed with HTTP status %s", responseStatus));
 				}
 
-				return entity;
+				return responseEntity;
 			} catch (Exception ex) {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.toString());
 			}

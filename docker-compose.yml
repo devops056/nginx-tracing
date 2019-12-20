@@ -11,10 +11,7 @@ services:
       - target_url=http://nginx-gateway:8080/nginx-demo
 
   nginx:
-    build:
-      context: ./nginx
-      args:
-        agent_key: ${agent_key}
+    image: nginx:1.16.1
     networks:
       nginxmesh:
         aliases:
@@ -22,6 +19,8 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/instana-config.json:/etc/instana-config.json
+      - ./nginx/linux-amd64-libinstana_sensor.so:/usr/lib/nginx/instana/libinstana_sensor.so
+      - ./nginx/linux-amd64-nginx-1.16.1-ngx_http_module.so:/usr/lib/nginx/modules/ngx_http_opentracing_module.so
     expose:
       - "8080"
 
@@ -47,6 +46,7 @@ services:
       - /dev:/dev
       - /sys:/sys
       - /var/log:/var/log
+      - ./agent/configuration.yaml:/root/configuration.yaml
     networks:
       nginxmesh:
         aliases:
