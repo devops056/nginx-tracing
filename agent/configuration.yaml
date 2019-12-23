@@ -1,0 +1,4 @@
+com.instana.tracing:
+  extra-http-headers:
+    - "x-test-header-1"
+    - "x-test-header-2"
