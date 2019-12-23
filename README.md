@@ -34,6 +34,11 @@ pushd server-app
 ./mvnw clean package
 popd
 
+pushd nginx
+wget -qO- https://github.com/opentracing-contrib/nginx-opentracing/releases/download/v0.9.0/linux-amd64-nginx-1.16.1-ngx_http_module.so.tgz | tar xvz - && mv ngx_http_opentracing_module.so linux-amd64-nginx-1.16.1-ngx_http_module.so
+wget --user $ARTIFACTORY_USER --password $ARTIFACTORY_PASSWORD https://artifact.instana.io/artifactory/agent-releases/com/instana/libinstana_sensor/0.6.0/linux-amd64-libinstana_sensor.so -O linux-amd64-libinstana_sensor.so
+popd
+
 docker-compose build
 ```
 
